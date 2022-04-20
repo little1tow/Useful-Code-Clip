@@ -25,7 +25,7 @@ total_loss=0
 for i, (inputs, labels) in enumerate(training_set):
     predictions = model(inputs)                     # Forward pass
     loss = loss_function(predictions, labels)       # Compute loss function
-  
+
     if (i+1) % accumulation_steps == 0:             # Wait for several backward steps
         total_loss = (total_loss+loss )/ accumulation_steps                # Normalize our loss (if averaged)
         total_loss.backward()                                 # Backward pass
@@ -33,7 +33,7 @@ for i, (inputs, labels) in enumerate(training_set):
         model.zero_grad()                           # Reset gradients tensors
         total_loss=0
         if (i+1) % evaluation_steps == 0:           # Evaluate the model when we...
-            evaluate_model()    
+            evaluate_model()
    else :
         total_loss=loss+total_loss
 
@@ -62,3 +62,34 @@ for batch_idx in range(training_batch_number):
     total_loss = loss_function(all_prediction, all_labels)
     total_loss.backward()
     optimizer.step()
+
+
+## solution 4: use amp
+
+from torch.cuda.amp import autocast
+from torch.cuda.amp import GradScaler
+
+model = model().cuda()
+optimizer = optim.SGD(model.parameters(),...)
+
+enable_amp = True if 'cuda' in device.type else False
+
+scaler = GradScaler(enabled=enable_amp)
+
+total_loss=0
+for i, (inputs, labels) in enumerate(training_set):
+    model.zero_grad()
+
+    with autocast(enabled=enable_amp):                  # only forward pass in autocast
+        predictions = model(inputs)                     # Forward pass
+        loss = loss_function(predictions, labels)       # Compute loss function
+
+    # 1. scales the loss, in case the gradient is disappear
+    scaler.scale(loss).backward()
+
+    # 2. if gradient is not infs or nans, then using optimizer.step() to update
+    #  else ignore the step, in case the weights are not damaged
+    scaler.step(optimizer)
+
+    # 3. whether or not to increase the scaler
+    scaler.update()
