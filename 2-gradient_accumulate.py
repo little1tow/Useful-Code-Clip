@@ -64,7 +64,7 @@ for batch_idx in range(training_batch_number):
     optimizer.step()
 
 
-## solution 4: use amp
+## solution 4: custumed amp use
 
 from torch.cuda.amp import autocast
 from torch.cuda.amp import GradScaler
@@ -84,12 +84,16 @@ for i, (inputs, labels) in enumerate(training_set):
         predictions = model(inputs)                     # Forward pass
         loss = loss_function(predictions, labels)       # Compute loss function
 
-    # 1. scales the loss, in case the gradient is disappear
-    scaler.scale(loss).backward()
+    if enabled_amp:
+        # 1. scales the loss, in case the gradient is disappear
+        scaler.scale(loss).backward()
 
-    # 2. if gradient is not infs or nans, then using optimizer.step() to update
-    #  else ignore the step, in case the weights are not damaged
-    scaler.step(optimizer)
+        # 2. if gradient is not infs or nans, then using optimizer.step() to update
+        #  else ignore the step, in case the weights are not damaged
+        scaler.step(optimizer)
 
-    # 3. whether or not to increase the scaler
-    scaler.update()
+        # 3. whether or not to increase the scaler
+        scaler.update()
+    else:
+        loss.backward()
+        optimizer.step()
