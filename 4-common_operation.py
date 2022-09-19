@@ -1,4 +1,4 @@
-
+import numpy as np
 
 def dict_sort(content, K, reverse=True):
     results = {}
@@ -10,3 +10,17 @@ def dict_sort(content, K, reverse=True):
             break
 
     return results
+
+
+# tanh function by numpy
+def tanh(x):
+    s1 = np.exp(x) - np.exp(-x)
+    s2 = np.exp(x) + np.exp(-x)
+    s = s1 / s2
+    return s
+
+
+# L2 loss function by numpy
+def L2(yhat, y):
+    loss = np.sum(np.multiply((y - yhat), (y - yhat)))
+    return loss
