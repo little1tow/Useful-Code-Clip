@@ -1,13 +1,16 @@
 import numpy as np
 
-def dict_sort(content, K, reverse=True):
+def dict_sort(content, K=None, reverse=True):
     results = {}
     sort_info = sorted(content.items(), key=lambda item: item[1], reverse=reverse)
     for idx, info in enumerate(sort_info):
-        if idx < K:
+        if K is None:
             results[info[0]] = info[1]
         else:
-            break
+            if idx < K:
+                results[info[0]] = info[1]
+            else:
+                break
 
     return results
 
