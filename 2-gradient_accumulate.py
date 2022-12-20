@@ -97,3 +97,22 @@ for i, (inputs, labels) in enumerate(training_set):
     else:
         loss.backward()
         optimizer.step()
+
+
+## solution 6: apm use
+
+import torch
+from apex import amp
+
+model = torch.nn.Linear(D_in, D_out).cuda()
+optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
+model, optimizer = amp.initialize(model, optimizer, opt_level="O2")
+
+for img, label in dataloader:
+	out = model(img)
+	loss = LOSS(out, label)
+	# loss.backward() 	
+        optimizer.zero_grad()
+        with amp.scale_loss(loss, optimizer) as scaled_loss:
+    	     scaled_loss.backward()
+	optimizer.step()
