@@ -29,3 +29,4 @@ plt.annotate('Point3', xy=(8, 3000),
 	         xytext=(8.5, 2200))
 
 plt.show()
+
