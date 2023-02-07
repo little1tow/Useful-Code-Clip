@@ -53,12 +53,12 @@ plt.figure(figsize=(10, 5))
 plt.title('example of boxplot', fontsize=23)
 
 # basic usage
-plt.boxplot(data, labels=label, grid=False) # grid is false means background line is invisible
+plt.boxplot(data, labels=label) # grid is false means background line is invisible
 plt.show()
 
 
 # horizen usage
-plt.boxplot(data, labels=label, vert=False, showmeans=True, grid=False) # vert=False -> HORIZEN boxplot, 
+plt.boxplot(data, labels=label, vert=False, showmeans=True) # vert=False -> HORIZEN boxplot, 
                                                                         # showmeans=True -> Show the mean value of all the bars
 
 plt.show()
